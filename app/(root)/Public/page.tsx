@@ -1,3 +1,3 @@
 export default function page() {
-  return <div>Public</div>;
+  return <div>Public Page</div>;
 }
