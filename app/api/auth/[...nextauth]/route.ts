@@ -1,11 +1,15 @@
+import dbConnect from "@/lib/mongodb/dbConnect";
+import UserModel from "@/models/UserModel";
 import NextAuth from "next-auth/next";
+import Credentials from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import bcrypt from "bcryptjs";
 
-const options = {
+export const authOptions = {
   providers: [
     GoogleProvider({
       profile(profile) {
-        let userRole = "Google User";
+        let userRole = "user";
         if (profile.email === "laressann2001@gmail.com") userRole = "admin";
         return {
           ...profile,
@@ -18,7 +22,35 @@ const options = {
       clientId: process.env.GOOGLE_ID as string,
       clientSecret: process.env.GOOGLE_SECRET as string,
     }),
+    Credentials({
+      name: "credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      authorize: async (
+        credentials: Record<"username" | "password", string> | undefined,
+        req: any
+      ): Promise<any> => {
+        await dbConnect();
+        const user = await UserModel.findOne({
+          username: credentials?.username,
+        });
+        if (!user) throw new Error("User name or password is not correct");
+        // Method to compare a candidate password with the user's hashed password
+        const checkPass = await bcrypt.compareSync(
+          credentials?.password as string,
+          user.password
+        );
+        if (!checkPass) throw new Error("Password is not correct");
+        const { password, ...userWithOutPass } = user._doc;
+        return userWithOutPass;
+      },
+    }),
   ],
+  pages: {
+    signIn: "/signin",
+  },
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {
       // user argument is the profile with the added properties from the profile callback
@@ -36,6 +68,6 @@ const options = {
     },
   },
 };
-const handler = NextAuth(options);
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
