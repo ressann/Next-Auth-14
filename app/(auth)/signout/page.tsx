@@ -1,16 +1,10 @@
 "use client";
-import { signOut, useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
-import { useEffect } from "react";
+import { signOut } from "next-auth/react";
 
 export default function page() {
-  const { data: session } = useSession();
   const handleSignOut = async () => {
-    const signout = await signOut({ callbackUrl: "/" });
+    await signOut({ callbackUrl: "/" });
   };
-  useEffect(() => {
-    if (!session) redirect("/api/auth/signin");
-  });
   return (
     <div className="grid place-items-center h-screen">
       <div className="flex gap-5 border rounded-md shadow-md p-5 w-96 flex-col">
