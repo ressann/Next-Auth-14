@@ -4,6 +4,7 @@ import NextAuth from "next-auth/next";
 import Credentials from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
+import { signOut } from "next-auth/react";
 
 export const authOptions = {
   providers: [
@@ -50,6 +51,7 @@ export const authOptions = {
   ],
   pages: {
     signIn: "/signin",
+    signOut: "/signout",
   },
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {

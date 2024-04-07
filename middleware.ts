@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 export default withAuth(function middleware(req) {
   const { pathname } = req.nextUrl;
   const { token } = req.nextauth;
-  console.log(token);
   if (
     !token &&
     ["/CreateUser", "/ClientMember", "/Member"].some((path) =>

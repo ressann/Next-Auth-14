@@ -21,7 +21,8 @@ const page = () => {
     if (result?.ok) {
       let url = new URLSearchParams(window.location.search);
       let page = url.get("callbackUrl");
-      router.push(page || "");
+      if (page === "http://localhost:3000/signout") router.push("/");
+      else router.push(page || "");
     }
     if (result?.error) {
       setError(result.error);
